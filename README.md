@@ -25,4 +25,4 @@ Notas
 Contribuciones
 - Este proyecto está pensado para uso personal y educativo; siéntase libre de experimentar y adaptar el código para aprender.
 
-Hecho con ❤️ para aprender gRPC.
+Hecho para aprender gRPC.
