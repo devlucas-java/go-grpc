@@ -1,0 +1,4 @@
+sqlite3 ./db.db "CREATE TABLE IF NOT EXISTS category(id int PRIMARY KEY, name varchar(255), description varchar(255));"
+
+
+protoc --go_out=. --go-grpc_out=. proto/course_category.proto
