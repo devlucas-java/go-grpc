@@ -4,11 +4,12 @@ import (
 	"database/sql"
 	"net"
 
+	"github.com/devlucas-java/go-grpc/internal/delivery/grpc/interceptor"
 	"github.com/devlucas-java/go-grpc/internal/delivery/grpc/pb"
 	"github.com/devlucas-java/go-grpc/internal/infra/database"
 	"github.com/devlucas-java/go-grpc/internal/infra/migration"
 	"github.com/devlucas-java/go-grpc/internal/service"
-	"google.golang.org/grpc"
+	grpcgo "google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 	_ "modernc.org/sqlite"
 )
@@ -21,7 +22,6 @@ func main() {
 	}
 	defer db.Close()
 
-	// Run migrations
 	m := migration.NewMigration(db)
 	if err := m.Run(); err != nil {
 		panic(err)
@@ -30,7 +30,12 @@ func main() {
 	categoryDB := database.NewCategoryDB(db)
 	categoryService := service.NewCategoryService(categoryDB)
 
-	grpcServer := grpc.NewServer()
+	grpcServer := grpcgo.NewServer(
+		grpcgo.ChainUnaryInterceptor(
+			interceptor.LogIntercepto,
+			interceptor.RateLimiter,
+		),
+	)
 	reflection.Register(grpcServer)
 
 	pb.RegisterCategoryServiceServer(grpcServer, categoryService)
